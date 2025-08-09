@@ -170,11 +170,11 @@ MainTab:CreateToggle({
                 while autofish do
                     pcall(function()
                         equipRemote:FireServer(1)
-                        task.wait(0.1)
+                        task.wait(0.01)
 
                         local timestamp = perfectCast and 9999999999 or (tick() + math.random())
                         rodRemote:InvokeServer(timestamp)
-                        task.wait(0.1)
+                        task.wait(0.01)
 
                         local x = perfectCast and -1.238 or (math.random(-1000, 1000) / 1000)
                         local y = perfectCast and 0.969 or (math.random(0, 1000) / 1000)
@@ -379,44 +379,18 @@ for _, bait in ipairs(baits) do
 end
 
 local AutoSellToggle = MainTab:CreateToggle({
-    Name = "🛒 Auto Sell (Teleport ke Alex)",
+    Name = "🛒 Auto Sell",
     CurrentValue = false,
     Flag = "AutoSell",
     Callback = function(value)
         featureState.AutoSell = value
         if value then
             task.spawn(function()
-                while featureState.AutoSell and player do
+                while featureState.AutoSell do
                     pcall(function()
-                        if not (player.Character and player.Character:FindFirstChild("HumanoidRootPart")) then return end
-
-                        local npcContainer = replicatedStorage:FindFirstChild("NPC")
-                        local alexNpc = npcContainer and npcContainer:FindFirstChild("Alex")
-
-                        if not alexNpc then
-                            Rayfield:Notify({
-                                Title = "❌ Error",
-                                Content = "NPC 'Alex' tidak ditemukan!",
-                                Duration = 5,
-                                Image = 4483362458
-                            })
-                            featureState.AutoSell = false
-                            AutoSellToggle:Set(false)
-                            return
-                        end
-
-                        local originalCFrame = player.Character.HumanoidRootPart.CFrame
-                        local npcPosition = alexNpc.WorldPivot.Position
-
-                        player.Character.HumanoidRootPart.CFrame = CFrame.new(npcPosition)
-                        task.wait(1)
-
                         replicatedStorage.Packages._Index["sleitnick_net@0.2.0"].net["RF/SellAllItems"]:InvokeServer()
-                        task.wait(1)
-
-                        player.Character.HumanoidRootPart.CFrame = originalCFrame
                     end)
-                    task.wait(20)
+                    task.wait(20) -- jeda antar jual
                 end
             end)
         end
